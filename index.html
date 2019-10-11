@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<script src="./jquery.signaturepad.min.js"></script> 
+		<script src="https://github.com/niklasvh/html2canvas/releases/download/0.4.1/html2canvas.js"></script>
+		
+		<style>		
+			canvas {
+				outline-style: solid;
+				outline-color: black;
+				outline-width: 1px;
+			}
+			
+			button {
+				width: 400px;
+				font-size: 24px;
+			}
+
+			#btnSaveSign {
+				height: 200px;
+				font-size: 48px;
+			}
+			
+			div#signArea {
+				width: 400px;
+				margin: 100px auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="signArea" >
+			
+			<h1 class="tag-ingo">Dibuixa la teva firma</h1>
+			<input type="text" placeholder="Autor de la firma" />
+			
+			<div class="sig sigWrapper" style="height:auto;">
+				<div class="typed"></div>
+				<canvas class="sign-pad" id="sign-pad" width="400px" height="250px"></canvas>
+			</div>			
+			
+			<br />
+			<button id="btnSaveSign">Guardar signatura</button>
+			<button id="clearCanvas">Clear signatura</button>
+		</div>
+		
+		<script>
+			$(document).ready(function() {
+				var pad = $('#signArea').signaturePad({
+					drawOnly:true,
+					penWidth : 5,
+					lineColour : '#fff',
+					penColour : '#ff1a1a'
+				});
+			
+				$("#clearCanvas").click(function() {
+					pad.clearCanvas();
+				});
+
+				$("#btnSaveSign").click(function(e){
+					html2canvas([document.getElementById('sign-pad')], {
+						onrendered: function (canvas) {
+							var author = $('input[type="text"]').val();
+							if (author == "") {
+								alert("Posa l'autor, carellot!");
+								return false;
+							}
+
+							var canvas_img_data = canvas.toDataURL('image/png');
+							var img_data = canvas_img_data.replace(/^data:image\/(png|jpg);base64,/, "");
+
+							// AJAX call to save image inside folder
+							$.ajax({
+								url: 'save_sign.php',
+								data: {
+									img_data: img_data,
+									author: author
+								},
+								type: 'post',
+								success: function (response) {
+								   console.log(response);
+								   pad.clearCanvas();
+								},
+								error: function () {
+									console.log('Error in saving the image')
+								}
+							});
+						}
+					});
+				});
+
+			});
+		</script>
+	</body>
+</html>
