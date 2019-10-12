@@ -7,6 +7,9 @@ PATH_DATA = "../../ImageData"
 PATH_MATRIX = "../../MatrixData"
 
 def convert():
+	if not os.path.isdir(PATH_MATRIX):
+		os.mkdir(PATH_MATRIX)
+	
 	image_names = set(name[:-4] for name in os.listdir(PATH_DATA))
 	matrix_names = set(os.listdir(PATH_MATRIX))
 
