@@ -25,3 +25,6 @@ def convert():
 			matrix_in = np_frame.tolist()
 			matrix_out = encode(matrix_in)
 			outfile.write(str(matrix_out))
+
+if __name__ == '__main__':
+	convert()

@@ -13,7 +13,9 @@ def download_imgs():
 		ftp_host.chdir("hackupc/imgs")
 		names = ftp_host.listdir(ftp_host.curdir)
 		for name in names:
-			if ftp_host.download_if_newer(name, os.path.join(DATA_PATH, name)):
+			if name[0] != '_' and ftp_host.download_if_newer(name, os.path.join(DATA_PATH, name)):
 				print(f"Downloading {name}")
 			
-		
+
+if __name__ == '__main__':
+	download_imgs()
