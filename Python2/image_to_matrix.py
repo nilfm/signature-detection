@@ -21,27 +21,30 @@ def convert():
 			steps[fid] = []
 		steps[fid].append(tstep)
 		
-		
 
 	for nameuuid in set.difference(image_names, matrix_names):
 		name, uuid = nameuuid.split('_')
-		np_frame = np.zeros((150, 250, 400, 3))
+		pages = []
 		cnt = 0
 		for step in sorted(steps['_'.join([name, uuid])]):
 			namepng = f"{name}_{uuid}_{step}.png"
 			im_frame = Image.open(os.path.join(PATH_DATA, namepng)).convert("RGB")
-			np_frame[cnt] = np.array(im_frame.getdata()).reshape(250, 400, 3)
+			np_frame = np.array(im_frame.getdata()).reshape(250, 400, 3)
+			np_frame = np.sum(np_frame, axis=2)/3
+			np_frame[np_frame < 255] = 0
+			np_frame /= 255
+			np_frame = 1 - np_frame
+			pages.append(np_frame)
 			cnt += 1
-			
-		np_frame = np.sum(np_frame, axis=2)/3
 		
-		np_frame[np_frame < 255] = 0
-		np_frame /= 255
-		np_frame = 1 - np_frame
+		while len(pages) < 20:
+			pages.append(np.zeros(250, 400, 1))
+		np_pages = np.array(pages)
+
 		
 		print(f"Saving matrix {name}_{uuid}")
 		with open(os.path.join(PATH_MATRIX, name+'_'+uuid), 'w') as outfile:
-			matrix_in = np_frame.tolist()
+			matrix_in = np_pages.tolist()
 			matrix_out = encode(matrix_in)
 			outfile.write(str(matrix_out))
 
