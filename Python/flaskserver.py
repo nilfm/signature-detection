@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 import os
 import tensorflow as tf
@@ -13,9 +14,10 @@ from keras.optimizers import RMSprop
 from keras.preprocessing.image import ImageDataGenerator
 
 model = load_model('../../Models/model.h5')
+num_photos = 0
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/', methods=['GET'])
 def dynamic_page():
@@ -35,12 +37,16 @@ def get_X():
 		np_frame /= 255
 		np_frame = 1-np_frame
 		pages.append(np_frame)
+	
+	global num_photos
+	num_photos = len(pages)
 	while len(pages) < 20:
 		pages.append(np.zeros((125, 200)))
 	return np.array(pages).reshape(-1, 20, 125, 200, 1)
 	
 
 def predict():
+	global num_photos
 	X = get_X()
 	
 	with open('../../Models/classes.json', 'r') as infile:
@@ -62,8 +68,9 @@ def predict():
 	ret['avgprop'] = stats[winner]
 	ret['absdiff'] = stats[winner]-prob
 	ret['reldiff'] = (stats[winner]-prob)/stats[winner]
+	ret['numphotos'] = num_photos-1
 	return jsonify(ret)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='8000', debug=True)
+    app.run(host='192.168.43.36', port='8000', debug=True) #CANVIAR IP
 

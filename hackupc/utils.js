@@ -64,13 +64,14 @@ function save2Image(imgs_data, author) {
     		}
     	});
 	} else {
-		let ngrow8k = 'http://71f34c6b.ngrok.io';
-		fetch(ngrow8k)
+		let url = 'http://192.168.43.36:8000'; //CANVIAR IP
+		fetch(url)
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data)
-				alert(data.winner)
-				document.write('<html><body><p>' + data.winner + '</p></body></html>');
+				var result = $.param(data);
+				console.log(result);
+				window.location.href = './results.php?' + result;
 			})
 	}
 }

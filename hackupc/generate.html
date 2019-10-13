@@ -1,7 +1,3 @@
-<?php
-    array_map('unlink', glob("../Predict/*"));
-?>
-
 <html>
 	<head>
 	    <meta name="viewport" content="width=device-width">
@@ -12,13 +8,22 @@
 		
 		<script src='utils.js'></script>
 		
+		<script>
+		    let urlParams = new URLSearchParams(window.location.search);
+            let samples = parseInt(urlParams.get('samples'), 10);
+            if (!samples) samples = 100;
+		</script>
+		
 		<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
 		<link href="./css/basic.css" rel="stylesheet" />
 	</head>
 	<body>
 		<div id="signArea" >
 			
-			<h3 class="tag-ingo">Predict signature</h3>
+			<h3 class="tag-ingo">Hi, <span id="author"></span></h3>
+			<span id="signs_counter">0</span>/<span id="samples">100</span> signatures done
+			<br />
+			<br />
 
 			<div class="sig sigWrapper" style="height:auto;">
 				<div class="typed"></div>
@@ -26,7 +31,7 @@
 			</div>			
 			
 			<br />
-			<button id="btnSaveSign">Predict signature</button>
+			<button id="btnSaveSign">Save signature</button>
 			<button id="clearCanvas">Clear signature</button>
 			<br />
 			<br />
@@ -35,20 +40,26 @@
 		</div>
 		
 		<script>
-			$(document).ready(function() {
+		    $(document).ready(function() {
 			    draw_counter = 0;
 			    signs_counter = 0;
 			    canvas_counter = 0;
 			    imgs_data = [];
+			    
+			    author = prompt('Please, provide a nickname to store your signature');
+		        $('#author').html(author);
+		        $('#samples').html(samples);
 			    
 				var pad = $('#signArea').signaturePad({
 					drawOnly:true,
 					penWidth : 5,
 					lineColour : '#fff',
 					penColour : '#ff1a1a',
-					onDraw: function () {					    
-						let img = pad.getSignatureImage();
-						saveCanvas(imgs_data, canvas_counter++, img);
+					onDraw: function () {
+					    if (draw_counter++ % 5 == 0) {
+					        let img = pad.getSignatureImage();
+					        saveCanvas(imgs_data, canvas_counter++, img);
+					    }
     				},
     				onDrawEnd: function () {
     				    console.log('Draw ended.');
@@ -56,13 +67,26 @@
 				});
 				
     			$("#clearCanvas").click(function() {
-    			    window.location.reload();
+    			    imgs_data = [];
+    			    canvas_counter = 0;
+                	pad.clearCanvas();
                 });
                 
                 $("#btnSaveSign").click(function(e){
                 	html2canvas([document.getElementById('sign-pad')], {
                 		onrendered: function (canvas) {
-                    		save2Image(imgs_data, '');
+                    		save2Image(imgs_data, author);
+                            
+                            $('#signs_counter').html(++signs_counter);
+                            $("#clearCanvas").click();
+                            
+                            if (signs_counter >= samples) {
+                                $('#signArea').html(
+                                      'Signature successfully added. '
+                                    + 'Thank you for your time. '
+                                    + 'We definitely won\'t use this for forgery, maybe.'
+                                );
+                            }
                 		}
                 	});
                 });

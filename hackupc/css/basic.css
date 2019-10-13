@@ -1,0 +1,52 @@
+html {
+    background: #ccc;
+    font-family: 'Open Sans';
+}
+
+input[type='text'] {
+	height: 30px;
+}
+
+div.welcome {
+    text-align: justify;
+    width: 80%;
+    padding: 15px 25px;
+}
+
+p {
+    font-size: 12px;
+    width: 70%;
+    margin: 0 auto;
+    margin-bottom: 25px;
+    text-align: justify;
+}
+
+canvas {
+	outline-style: solid;
+	outline-color: black;
+	outline-width: 1px;
+}
+
+button {
+	width: 70%;
+	font-size: 14px;
+	height: 50px;
+}
+
+#btnSaveSign {
+	height: 100px;
+	font-size: 18px;
+}
+
+#clearCanvas {
+    height: 30px;
+}
+
+div#signArea {
+	max-width: 350px;
+	margin: 100px auto;
+	text-align: center;
+	background-color: rgb(255, 255, 255, 0.8);
+	padding: 15px 5px;
+	padding-bottom: 25px;
+}
